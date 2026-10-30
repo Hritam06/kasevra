@@ -37,7 +37,7 @@ console = Console(
 
 
 def header(command: str = "dashboard", subtitle: str = "") -> None:
-    """Render a centered, width-aware KASEVRA command header."""
+    """Render the KASEVRA identity and command context."""
     console.print()
     width = min(console.width, 88)
     logo_text = (
@@ -45,32 +45,34 @@ def header(command: str = "dashboard", subtitle: str = "") -> None:
         if COLOR_ENABLED and width >= 65
         else SHIELD_ASCII.strip("\n")
     )
-
-    brand = Text()
-    brand.append(logo_text + "\n", style=f"bold {TEAL}" if COLOR_ENABLED else "bold")
-    brand.append(APP_NAME + "\n", style=f"bold {TEAL}" if COLOR_ENABLED else "bold")
-    brand.append(PRODUCT_DESCRIPTION + "\n")
-    brand.append(TAGLINE, style="italic" if COLOR_ENABLED else None)
-
+    accent = f"bold {TEAL}" if COLOR_ENABLED else "bold"
+    brand = Text(justify="center")
+    brand.append(logo_text + "\n", style=accent)
+    brand.append("\n" + APP_NAME + "\n", style=accent)
+    brand.append(
+        PRODUCT_DESCRIPTION + "\n",
+        style="dim" if COLOR_ENABLED else None,
+    )
+    brand.append(
+        TAGLINE,
+        style=f"italic {TEAL}" if COLOR_ENABLED else "italic",
+    )
     console.print(
         Panel(
             Align.center(brand),
             width=width,
             border_style=TEAL if COLOR_ENABLED else "white",
-            box=box.ROUNDED,
+            box=box.HEAVY,
             padding=(1, 2),
         )
     )
-
     details = Text()
-    details.append("COMMAND  ", style=f"bold {TEAL}" if COLOR_ENABLED else "bold")
+    details.append("COMMAND  ", style=accent)
     details.append(f"kasevra {command}    ")
-    details.append("TIME  ", style=f"bold {TEAL}" if COLOR_ENABLED else "bold")
+    details.append("TIME  ", style=accent)
     details.append(datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z"))
-
     if subtitle:
         details.append("\n" + subtitle)
-
     console.print(Align.center(details, width=width))
     console.print()
 

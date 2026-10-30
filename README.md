@@ -66,8 +66,12 @@ python -m build
 
 ## Continuous integration
 
-The GitHub Actions workflow is configured for Ubuntu, macOS, and Windows with Python 3.11 through 3.14. Cross-platform results remain pending until the workflow has run successfully.
+The GitHub Actions workflow has successfully passed on Ubuntu, macOS, and Windows with Python 3.11 through 3.14 (12 CI jobs).
 
-## Project status
+## Integrity model and limitations
 
-KASEVRA is under development. The first intended public release is **v1.0.0**. No interim public releases are planned.
+KASEVRA uses SHA-256 hashes to record file contents and help identify changes. Collection manifests provide a record of collected files, while reference baselines support later comparison. The `verify` command independently recalculates hashes from collected files to check their current integrity.
+
+A matching hash demonstrates that the checked file content matches the recorded hash. It does not establish who created the file, where it originated, or whether its contents are authentic. A baseline is a reference for comparison, not proof of provenance.
+
+KASEVRA is designed for read-only evidence handling and offline-first operation. It does not replace full disk imaging, memory forensics, or a professional forensic examination. Review verification results, warnings, and supporting evidence before drawing conclusions. Results describe the checks KASEVRA performed and should not be treated as a guarantee that evidence is complete or authentic.
