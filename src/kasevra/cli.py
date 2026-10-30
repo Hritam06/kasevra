@@ -32,7 +32,8 @@ def version_callback(value: bool) -> None:
 app = typer.Typer(
     name="kasevra",
     help=f"{PRODUCT_DESCRIPTION}\n\n{TAGLINE}",
-    no_args_is_help=True,
+    no_args_is_help=False,
+    invoke_without_command=True,
     add_completion=False,
     rich_markup_mode=None,
     pretty_exceptions_enable=False,
@@ -105,6 +106,7 @@ def dashboard() -> None:
 
 @app.callback()
 def main(
+    ctx: typer.Context,
     show_version: bool = typer.Option(
         False,
         "--version",
@@ -114,6 +116,8 @@ def main(
     ),
 ) -> None:
     """KASEVRA: collect with care and verify with confidence."""
+    if ctx.invoked_subcommand is None:
+        dashboard_demo()
 
 
 if __name__ == "__main__":

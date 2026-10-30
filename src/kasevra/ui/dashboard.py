@@ -20,8 +20,6 @@ from .branding import (
     GREEN,
     PRODUCT_DESCRIPTION,
     RED,
-    SHIELD,
-    SHIELD_ASCII,
     TAGLINE,
     TEAL,
 )
@@ -51,37 +49,45 @@ def _version() -> str:
 
 
 def header(command: str = "dashboard", subtitle: str = "") -> None:
-    """Render the KASEVRA identity and command context."""
+    """Render the centered KASEVRA wordmark and command context."""
     width = min(console.width, 150)
-    logo = SHIELD.strip("\n") if COLOR_ENABLED else SHIELD_ASCII.strip("\n")
 
-    identity = Table.grid(padding=(0, 2))
-    identity.add_column(justify="center", width=25)
-    identity.add_column(ratio=1)
+    font = {
+        "K": ("█   █", "█  █ ", "███  ", "█  █ ", "█   █"),
+        "A": (" ███ ", "█   █", "█████", "█   █", "█   █"),
+        "S": (" ████", "█    ", " ███ ", "    █", "████ "),
+        "E": ("█████", "█    ", "████ ", "█    ", "█████"),
+        "V": ("█   █", "█   █", "█   █", " █ █ ", "  █  "),
+        "R": ("████ ", "█   █", "████ ", "█  █ ", "█   █"),
+    }
+    wordmark = "\n".join(
+        "  ".join(font[letter][row] for letter in APP_NAME) for row in range(5)
+    )
 
-    shield = Text(logo, style=f"bold {_style(TEAL)}" if COLOR_ENABLED else "bold")
-    wordmark = Text()
-    wordmark.append(
-        APP_NAME + "\n", style=f"bold {_style(TEAL)}" if COLOR_ENABLED else "bold"
+    brand = Text(justify="center")
+    brand.append(
+        wordmark + "\n\n", style=f"bold {_style(TEAL)}" if COLOR_ENABLED else "bold"
     )
-    wordmark.append(f"v{_version()}\n", style=_style(GREEN) or "")
-    wordmark.append(PRODUCT_DESCRIPTION + "\n", style=_style(TEAL) or "")
-    wordmark.append(
-        TAGLINE, style=f"italic {_style(TEAL)}" if COLOR_ENABLED else "italic"
+    brand.append(
+        "────  " + PRODUCT_DESCRIPTION.upper() + "  ────\n\n",
+        style=f"bold {_style(TEAL)}" if COLOR_ENABLED else "bold",
     )
-    if not COLOR_ENABLED:
-        console.print(Text(logo))
-        shield = Text("")
-    identity.add_row(Align.center(shield), Align.center(wordmark))
+    brand.append(
+        "///   " + TAGLINE + "   ///",
+        style=f"italic {_style(TEAL)}" if COLOR_ENABLED else "italic",
+    )
 
     console.print()
     console.print(
-        Panel(
-            identity,
-            width=width,
-            border_style=_style(TEAL) or "white",
-            box=box.DOUBLE,
-            padding=(1, 2),
+        Align.center(
+            Panel(
+                Align.center(brand),
+                width=width,
+                border_style=_style(TEAL) or "white",
+                box=box.HEAVY,
+                padding=(1, 2),
+            ),
+            width=console.width,
         )
     )
 
