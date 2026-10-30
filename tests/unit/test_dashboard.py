@@ -5,39 +5,40 @@ from rich.console import Console
 import kasevra.ui.dashboard as dashboard
 
 
-def test_header_renders_branding(monkeypatch):
+def test_header_renders_centered_branding(monkeypatch):
     output = StringIO()
     monkeypatch.setattr(
         dashboard,
         "console",
-        Console(file=output, force_terminal=False, width=100),
+        Console(file=output, force_terminal=False, width=150),
     )
     monkeypatch.setattr(dashboard, "COLOR_ENABLED", False)
-
     dashboard.header("doctor", "Environment check")
-
     rendered = output.getvalue()
-    assert dashboard.APP_NAME in rendered
-    assert dashboard.PRODUCT_DESCRIPTION in rendered
+
+    assert dashboard.PRODUCT_DESCRIPTION.upper() in rendered
     assert dashboard.TAGLINE in rendered
     assert "kasevra doctor" in rendered
     assert "Environment check" in rendered
+    assert "v1.0.0" not in rendered
+    assert "✔" not in rendered
 
 
-def test_header_uses_ascii_logo_in_plain_text_mode(monkeypatch):
+def test_header_displays_block_wordmark_without_shield(monkeypatch):
     output = StringIO()
     monkeypatch.setattr(
         dashboard,
         "console",
-        Console(file=output, force_terminal=False, width=100),
+        Console(file=output, force_terminal=False, width=150),
     )
     monkeypatch.setattr(dashboard, "COLOR_ENABLED", False)
-
     dashboard.header()
-
     rendered = output.getvalue()
-    for line in dashboard.SHIELD_ASCII.strip("\n").splitlines():
-        assert line.strip() in rendered
+
+    assert "█████" in rendered
+    assert dashboard.TAGLINE in rendered
+    assert dashboard.PRODUCT_DESCRIPTION.upper() in rendered
+    assert "✔" not in rendered
 
 
 def test_section_renders_heading(monkeypatch):
