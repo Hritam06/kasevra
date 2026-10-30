@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kasevra"
+version = "1.0.0"
+description = "Digital Evidence & Integrity Toolkit"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "rich>=13.9,<16",
+    "typer>=0.15,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+    "pytest-cov>=6,<8",
+    "ruff>=0.9,<1",
+    "build>=1.2,<2",
+]
+
+[project.scripts]
+kasevra = "kasevra.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
