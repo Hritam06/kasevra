@@ -8,6 +8,7 @@ from pathlib import Path
 
 from cryptography.exceptions import InvalidSignature
 
+from kasevra.crypto._safe_read import read_regular_file
 from kasevra.crypto.keys import load_private_key, load_public_key
 from kasevra.integrity.canonical import canonical_json_bytes
 
@@ -29,7 +30,14 @@ def sign_manifest(
     if signature_path.exists():
         raise FileExistsError(f"Refusing to overwrite signature: {signature_path}")
 
-    manifest_bytes = manifest_path.read_bytes()
+    try:
+        manifest_bytes, _ = read_regular_file(
+            manifest_path,
+            limit=64 * 1024 * 1024,
+            label="Manifest",
+        )
+    except OSError as exc:
+        raise SignatureError(str(exc)) from exc
     key = load_private_key(private_key_path)
     signature = key.sign(manifest_bytes)
     public_bytes = key.public_key().public_bytes_raw()
@@ -64,37 +72,19 @@ def verify_signature(
 ) -> dict:
     """Verify a detached signature against a supplied public key."""
 
-    def safe_read(path: Path, limit: int = 64 * 1024 * 1024) -> bytes:
-        path = Path(path)
-        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
-        try:
-            if path.is_symlink():
-                raise SignatureError("Symbolic-link signature inputs are not permitted")
-            fd = os.open(path, flags)
-            try:
-                if path.is_symlink():
-                    raise SignatureError(
-                        "Symbolic-link signature inputs are not permitted"
-                    )
-                info = os.fstat(fd)
-                if not __import__("stat").S_ISREG(info.st_mode):
-                    raise SignatureError("Signature input must be a regular file")
-                if info.st_size > limit:
-                    raise SignatureError("Signature input exceeds the size limit")
-                with os.fdopen(fd, "rb", closefd=False) as stream:
-                    data = stream.read(limit + 1)
-                if len(data) > limit:
-                    raise SignatureError("Signature input exceeds the size limit")
-                return data
-            finally:
-                os.close(fd)
-        except SignatureError:
-            raise
-        except OSError as exc:
-            raise SignatureError("Unable to safely read signature input") from exc
-
-    manifest_bytes = safe_read(Path(manifest_path))
-    signature_bytes = safe_read(Path(signature_path), 1024 * 1024)
+    try:
+        manifest_bytes, _ = read_regular_file(
+            Path(manifest_path),
+            limit=64 * 1024 * 1024,
+            label="Manifest",
+        )
+        signature_bytes, _ = read_regular_file(
+            Path(signature_path),
+            limit=1024 * 1024,
+            label="Signature input",
+        )
+    except OSError as exc:
+        raise SignatureError(str(exc)) from exc
 
     def reject_duplicates(pairs):
         result = {}
