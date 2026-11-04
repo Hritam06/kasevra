@@ -2,7 +2,7 @@
 
 ## Status
 
-This guide describes the V2 programmatic interfaces present in the repository. Package metadata and the published release remain at version 1.0.0. V2 functionality is not currently exposed as additional CLI commands.
+This guide describes the V2.0.0 programmatic interfaces present in the repository. The package version is 2.0.0. V2 functionality is exposed through Python APIs; the existing V1 CLI remains available and is not extended with V2 subcommands.
 
 V2 extends the existing file-level evidence workflow while retaining the V1 command-line interface.
 
