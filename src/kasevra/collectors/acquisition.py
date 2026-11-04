@@ -33,12 +33,16 @@ def _safe_source_file(path: Path) -> os.stat_result:
 
 def _same_source(before: os.stat_result, after: os.stat_result) -> bool:
     """Detect common source changes during acquisition."""
+    same_identity = (
+        not before.st_ino or not after.st_ino or before.st_ino == after.st_ino
+    )
+    same_change_time = os.name != "posix" or before.st_ctime_ns == after.st_ctime_ns
     return (
         before.st_dev == after.st_dev
-        and before.st_ino == after.st_ino
+        and same_identity
         and before.st_size == after.st_size
         and before.st_mtime_ns == after.st_mtime_ns
-        and before.st_ctime_ns == after.st_ctime_ns
+        and same_change_time
     )
 
 

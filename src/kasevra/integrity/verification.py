@@ -16,9 +16,14 @@ FILE_STATUSES = {"PASS", "MODIFIED", "MISSING", "UNEXPECTED", "ERROR"}
 
 def _hash_open_file(path: Path) -> tuple[str, int]:
     """Hash a regular file without following its final symbolic link."""
+    if Path(path).is_symlink():
+        raise OSError("Symbolic-link evidence is not permitted")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     flags |= getattr(os, "O_CLOEXEC", 0)
     descriptor = os.open(path, flags)
+    if Path(path).is_symlink():
+        os.close(descriptor)
+        raise OSError("Symbolic-link evidence is not permitted")
 
     try:
         metadata_before = os.fstat(descriptor)
@@ -36,7 +41,11 @@ def _hash_open_file(path: Path) -> tuple[str, int]:
         metadata_after = os.fstat(descriptor)
         if (
             metadata_before.st_dev != metadata_after.st_dev
-            or metadata_before.st_ino != metadata_after.st_ino
+            or (
+                metadata_before.st_ino
+                and metadata_after.st_ino
+                and metadata_before.st_ino != metadata_after.st_ino
+            )
             or metadata_before.st_size != metadata_after.st_size
             or metadata_before.st_mtime_ns != metadata_after.st_mtime_ns
         ):

@@ -223,9 +223,14 @@ def create_v2_baseline(
 
 
 def _hash_evidence(path: Path) -> tuple[str, int]:
+    if Path(path).is_symlink():
+        raise OSError("Symbolic-link evidence is not permitted")
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     flags |= getattr(os, "O_CLOEXEC", 0)
     fd = os.open(path, flags)
+    if Path(path).is_symlink():
+        os.close(fd)
+        raise OSError("Symbolic-link evidence is not permitted")
     try:
         before = os.fstat(fd)
         if not stat.S_ISREG(before.st_mode):
@@ -241,7 +246,7 @@ def _hash_evidence(path: Path) -> tuple[str, int]:
         after = os.fstat(fd)
         if (
             before.st_dev != after.st_dev
-            or before.st_ino != after.st_ino
+            or (before.st_ino and after.st_ino and before.st_ino != after.st_ino)
             or before.st_size != after.st_size
             or before.st_mtime_ns != after.st_mtime_ns
         ):

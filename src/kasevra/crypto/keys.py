@@ -75,14 +75,20 @@ def _read_key_file(path: Path, *, private: bool) -> bytes:
     path = Path(path)
     flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
     try:
+        if path.is_symlink():
+            raise KeyError("Symbolic-link key files are not permitted")
         fd = os.open(path, flags)
         try:
+            if path.is_symlink():
+                raise KeyError("Symbolic-link key files are not permitted")
             info = os.fstat(fd)
             if not stat.S_ISREG(info.st_mode):
                 raise KeyError("Key must be a regular file")
             if info.st_size > 1024 * 1024:
                 raise KeyError("Key file exceeds the 1 MiB size limit")
-            if private and stat.S_IMODE(info.st_mode) & 0o077:
+            # POSIX mode bits are meaningful on POSIX filesystems. Windows
+            # security is governed by inherited NTFS ACLs, not chmod mode bits.
+            if private and os.name == "posix" and stat.S_IMODE(info.st_mode) & 0o077:
                 raise KeyError(
                     "Private key permissions must not allow group or other access"
                 )

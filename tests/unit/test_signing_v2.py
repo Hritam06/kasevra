@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from kasevra.crypto.keys import KeyError as SigningKeyError
@@ -15,7 +17,8 @@ def test_ed25519_sign_and_verify(tmp_path):
     generate_keypair(private_key, public_key)
     sign_manifest(manifest, private_key, signature)
 
-    assert private_key.stat().st_mode & 0o777 == 0o600
+    if os.name == "posix":
+        assert private_key.stat().st_mode & 0o777 == 0o600
     assert verify_signature(manifest, signature, public_key)["status"] == "PASS"
 
 
@@ -43,6 +46,7 @@ def test_key_generation_refuses_overwrite(tmp_path):
         generate_keypair(private_key, public_key)
 
 
+@pytest.mark.skipif(os.name != "posix", reason="POSIX mode-bit check")
 def test_private_key_permissions_are_enforced(tmp_path):
     private_key = tmp_path / "private.pem"
     public_key = tmp_path / "public.pem"
