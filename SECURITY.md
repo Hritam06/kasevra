@@ -4,7 +4,7 @@
 
 Security fixes will be provided for the latest published KASEVRA release.
 
-Before the first public release, no published release is available.
+The latest published release is KASEVRA V1.0.0. Security fixes are provided for the latest published release.
 
 ## Reporting a vulnerability
 

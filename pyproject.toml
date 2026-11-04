@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 dependencies = [
     "rich>=13.9,<16",
     "typer>=0.15,<1",
+    "cryptography>=44,<47",
 ]
 
 [project.optional-dependencies]
