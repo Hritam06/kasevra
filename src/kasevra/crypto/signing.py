@@ -65,10 +65,17 @@ def verify_signature(
     """Verify a detached signature against a supplied public key."""
 
     def safe_read(path: Path, limit: int = 64 * 1024 * 1024) -> bytes:
+        path = Path(path)
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
         try:
+            if path.is_symlink():
+                raise SignatureError("Symbolic-link signature inputs are not permitted")
             fd = os.open(path, flags)
             try:
+                if path.is_symlink():
+                    raise SignatureError(
+                        "Symbolic-link signature inputs are not permitted"
+                    )
                 info = os.fstat(fd)
                 if not __import__("stat").S_ISREG(info.st_mode):
                     raise SignatureError("Signature input must be a regular file")
