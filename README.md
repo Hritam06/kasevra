@@ -14,8 +14,8 @@
     file integrity.
   </p>
   <p>
-    <a href="https://github.com/Hritam06/kasevra/releases/tag/v1.0.0">
-      <img src="https://img.shields.io/badge/release-v1.0.0-216e39" alt="Latest published release v1.0.0">
+    <a href="https://github.com/Hritam06/kasevra/releases/tag/v2.0.0">
+      <img src="https://img.shields.io/badge/release-v2.0.0-216e39" alt="KASEVRA V2.0.0 release">
     </a>
     <a href="https://github.com/Hritam06/kasevra/actions/workflows/tests.yml">
       <img src="https://github.com/Hritam06/kasevra/actions/workflows/tests.yml/badge.svg" alt="Tests">
@@ -37,9 +37,9 @@
 
 KASEVRA is a file-level evidence collection and integrity toolkit. It helps operators acquire selected files, preserve reference hashes, verify collected content, compare collections with baselines, and produce reviewable reports.
 
-The repository retains the published **V1.0.0** command-line workflow and contains a developing V2 Python API foundation. V2 adds a versioned manifest model, independent verification and baseline comparison, detached Ed25519 signatures, hash-linked custody events, and structured JSON/HTML reporting.
+KASEVRA V2.0.0 extends the established V1.0.0 file-level evidence workflow with a versioned Python API. It adds a V2 manifest model, independent verification and baseline comparison, detached Ed25519 signatures, hash-linked custody events, and structured JSON/HTML reporting. The V1 command-line interface remains available for backward compatibility.
 
-> **Scope note:** V2 interfaces are currently programmatic Python APIs. The installed CLI still exposes the V1 commands. V2 is not presented as a published release.
+> **Scope note:** V2.0.0 exposes its new capabilities through programmatic Python APIs. The installed CLI retains the V1 command set; V2 does not add new CLI subcommands.
 
 ### What it provides
 
@@ -161,7 +161,7 @@ python -m ruff format --check .
 python -m build
 ```
 
-The current local validation recorded for the V2 development work is **139 passing tests**, Ruff lint and formatting checks passing, a clean dependency check, and successful source distribution and wheel builds. These are local results, not a claim that every remote CI matrix job has run for the current unmerged changes.
+The recorded local validation is **145 passing tests and 1 platform-specific skipped test**, with Ruff lint and formatting checks passing and successful source distribution and wheel builds. The security-hardening commit `015c4f5` also passed all **12 GitHub Actions matrix jobs** across Ubuntu, macOS, and Windows with Python 3.11–3.14.
 
 ## Security model and limitations
 

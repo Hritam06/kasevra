@@ -2,9 +2,10 @@
 
 All notable changes to KASEVRA will be documented here.
 
-## Unreleased
+## v2.0.0 - 2026-11-04
 
-### V2 development
+### V2 programmatic API
+
 
 - Added a V2 evidence manifest schema with canonical serialization and digest validation.
 - Added programmatic evidence acquisition with streamed SHA-256 hashing and structured outcomes.
@@ -13,6 +14,8 @@ All notable changes to KASEVRA will be documented here.
 - Added hash-linked chain-of-custody event logging and validation.
 - Added structured JSON and HTML reporting.
 - Added validation and hardening for manifests, baselines, keys, signatures, and custody events.
+- Hardened signing-related file reads against symbolic-link and Windows reparse-point attacks.
+- Added security regression coverage for unsafe file paths, malformed signatures, and oversized inputs.
 - Added automated V2 unit and security-hardening tests.
 
 ### Documentation
